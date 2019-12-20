@@ -29,6 +29,11 @@ export class Tx extends BcThing {
     try {
       let tx = await this.getTx()
       await this.setToAddress(tx)
+      this.addresses.add(tx.from)
+      let { contractAddress } = tx.receipt
+      if (contractAddress) {
+        this.addresses.add(contractAddress)
+      }
       tx = this.txFormat(tx)
       let data = { tx }
       data.events = await this.parseEvents(tx)
@@ -45,6 +50,21 @@ export class Tx extends BcThing {
       return Promise.reject(err)
     }
   }
+
+ /*  async createContract (tx) {
+    try {
+      const { receipt } = tx
+      let { contractAddress } = receipt
+      if (!contractAddress) return
+      let address = this.addresses.add(contractAddress)
+      await address.fetch()
+      let { code } = address.getData()
+      let { nod3, initConfig } = this
+      return new Contract(contractAddress, { tx, code }, { nod3, initConfig })
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  } */
 
   async setToAddress ({ to }) {
     this.toAddress = to
@@ -64,8 +84,6 @@ export class Tx extends BcThing {
       if (!receipt) throw new Error(`The Tx ${txHash} .receipt is: ${receipt} `)
       tx.timestamp = this.timestamp
       tx.receipt = receipt
-      let { contractAddress } = receipt
-      if (contractAddress) this.addresses.add(contractAddress)
       if (!tx.transactionIndex) tx.transactionIndex = receipt.transactionIndex
       return tx
     } catch (err) {

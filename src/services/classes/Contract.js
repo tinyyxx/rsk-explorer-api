@@ -1,24 +1,28 @@
 import { BcThing } from './BcThing'
 import ContractParser from 'rsk-contract-parser'
 import { tokensInterfaces } from '../../lib/types'
-import TokenAddress from './TokenAddress'
 import { hasValue } from '../../lib/utils'
 
+/**
+ * @description
+ * @class Contract
+ * @params:
+ * 
+ * @extends {BcThing}
+ */
 class Contract extends BcThing {
-  constructor (address, creationData, { nod3, initConfig }) {
+  constructor (address, createdBy, { abi, nod3, initConfig }) {
     super({ nod3, initConfig })
+    let { log } = this
     if (!this.isAddress(address)) throw new Error(`Contract: invalid address ${address}`)
-    this.parser = new ContractParser({ initConfig, nod3 })
-    this.address = address
+    this.parser = new ContractParser({ abi, log, initConfig, nod3 })
     this.creationData = creationData
     const createdByTx = (creationData && creationData.tx) ? creationData.tx : null
     this.data = {
       address,
-      createdByTx,
-      addresses: []
+      createdBy
     }
     this.contract = this.makeContract()
-    this.addresses = {}
   }
 
   async fetch () {
@@ -35,8 +39,6 @@ class Contract extends BcThing {
           if (tokenData) this.data = Object.assign(this.data, tokenData)
         }
       }
-
-      this.data.addresses = await this.fetchAddresses()
       let data = this.getData()
       return data
     } catch (err) {
@@ -55,19 +57,6 @@ class Contract extends BcThing {
     return this.parser.getTokenData(this.contract, { methods })
   }
 
-  addAddress (address) {
-    if (!this.isAddress(address)) return
-    if (!this.addresses[address]) {
-      let Address = this.newAddress(address)
-      this.addresses[address] = Address
-      return Address
-    }
-  }
-
-  newAddress (address) {
-    return new TokenAddress(address, this)
-  }
-
   call (method, params = []) {
     const contract = this.contract
     return this.parser.call(method, contract, params)
@@ -76,14 +65,11 @@ class Contract extends BcThing {
   isToken (interfaces) {
     return hasValue(interfaces, tokensInterfaces)
   }
-  async fetchAddresses () {
-    let data = []
-    for (let a in this.addresses) {
-      let Address = this.addresses[a]
-      let addressData = await Address.fetch()
-      if (addressData) data.push(addressData)
-    }
-    return data
+  getCode () {
+
+  }
+  getDeployedBytecode () {
+    // get bytecode from tx.input || iTx
   }
 }
 export default Contract

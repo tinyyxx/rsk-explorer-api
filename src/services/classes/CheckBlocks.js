@@ -168,7 +168,7 @@ export class CheckBlocks extends BlocksBase {
         let lastBlock = this.tipBlock
         this.tipCount = 0
         this.log.info(`Checking db / LastBlock: ${lastBlock}`)
-        let res = await this.checkDb(true, lastBlock, lastBlock - this.tipSize * 10)
+        let res = await this.checkDb(true, lastBlock, lastBlock - this.tipSize)
         this.log.trace(`Check db: ${res}`)
         return this.getBlocks(res)
       }

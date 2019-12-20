@@ -1,6 +1,7 @@
 import { BcThing } from './BcThing'
 import { isBlockObject, isNullData } from '../../lib/utils'
 import { fields, addrTypes } from '../../lib/types'
+import Contract from './Contract'
 
 function createAddressData ({ address, isNative, name }) {
   const type = (isNative) ? addrTypes.CONTRACT : addrTypes.ADDRESS
@@ -37,15 +38,16 @@ function createAddressData ({ address, isNative, name }) {
 }
 
 export class Address extends BcThing {
-  constructor (address, { dbData, nod3, initConfig, block = 'latest' } = {}) {
+  constructor (address, { dbData, contract, nod3, initConfig, block = 'latest' } = {}) {
     super({ nod3, initConfig })
     if (!this.isAddress(address)) throw new Error((`Invalid address: ${address}`))
     this.address = address
     this.fetched = false
     this.data = createAddressData(this)
     this.dbData = dbData
-    this.contract = undefined
+    this.contract = (contract instanceof Contract) ? contract : undefined
     this.block = 'latest'
+    this.createdByTx = undefined
     let { nativeContracts } = this
     this.isNative = (nativeContracts) ? nativeContracts.getNativeContractName(address) : false
     this.name = this.isNative || null
@@ -76,8 +78,20 @@ export class Address extends BcThing {
     }
   }
 
-  getCode () {
-    return this.nod3.eth.getCode(this.address, this.block)
+  async getCode () {
+    if (!this.code) {
+      this.code = await this.nod3.eth.getCode(this.address, this.block)
+    }
+    return this.code
+  }
+
+  getContract () {
+    let { contract, address, nod3, initConfig, code, createdByTx } = this
+    if (contract) return contract
+    let creationData = (createdByTx) ? { tx: createdByTx, code } : null
+    contract = new Contract(address, creationData, { nod3, initConfig })
+    this.contract = contract
+    return contract
   }
 
   async fetch (forceFetch) {

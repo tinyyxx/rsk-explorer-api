@@ -28,6 +28,10 @@ describe('Get Block', function () {
     expect(Object.keys(blockData)).to.be.deep.equal(Object.keys(blockSpec))
   })
 
+  it(`check addresses`, () => {
+    expect(blockData.addresses.map(a => a.address)).to.include.members(blockSpec.addresses.map(a => a.address))
+  })
+
   it(`tokenAddresses`, function () {
     expect(blockData.tokenAddresses.length).to.be.equal(blockSpec.tokenAddresses.length)
   })

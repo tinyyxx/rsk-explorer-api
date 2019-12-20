@@ -7,14 +7,15 @@ import datasource from '../../src/lib/dataSource'
 import initConfig from '../../src/lib/initialConfiguration'
 
 const tokens = [
-  {
+/*   {
     blockNumber: 27941,
     expected: {
       contractInterfaces: ['ERC165', 'ERC721', 'ERC721Enumerable', 'ERC721Metadata'],
       name: 'Test721',
       symbol: 'TEST721'
     }
-  }, {
+  }, */
+  {
     blockNumber: 16126,
     expected: {
       contractInterfaces: ['ERC20'],
@@ -24,7 +25,6 @@ const tokens = [
     }
   }
 ]
-
 
 describe(`# Test tokens`, function () {
   it('should be connected to RSK testnet', async function () {
@@ -36,10 +36,11 @@ describe(`# Test tokens`, function () {
     let { name } = expected
     describe(`## Test token ${name}, block ${blockNumber}`, function () {
       let blockData, contract
+      this.timeout(90000)
       it('get contract data', async function () {
-        this.timeout(60000)
         let { db } = await datasource()
-        let block = new Block(blockNumber, new BlocksBase(db, { initConfig }))
+        let notTrace = true
+        let block = new Block(blockNumber, new BlocksBase(db, { initConfig, notTrace }))
         await block.fetch()
         blockData = block.getData(true)
         expect(blockData.contracts).to.be.an('array')
