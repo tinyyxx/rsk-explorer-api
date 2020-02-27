@@ -266,6 +266,44 @@
         }
       }
     },
+    "/api?module=addresses&action=findAddresses": {
+      "get": {
+        "description": "find addresses by name",
+        "tags": [
+          "addresses"
+        ],
+        "parameters": [
+          {
+            "name": "module",
+            "in": "query",
+            "required": true,
+            "enum": [
+              "addresses"
+            ]
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "name",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/definitions/Response"
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          }
+        }
+      }
+    },
     "/api?module=blocks&action=getBlock": {
       "get": {
         "description": "get block data",
