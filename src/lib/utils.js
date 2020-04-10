@@ -125,3 +125,30 @@ export const isBlockObject = block => {
 }
 
 export const toAscii = hexString => toBuffer(remove0x(hexString), 'hex').toString('ascii').replace(/\0/g, '')
+
+function filterArr (a) {
+  if (!Array.isArray(a)) return a
+  return a.find(x => filterArr(x))
+}
+
+export async function binarySearchNumber (searchCb, high, low) {
+  try {
+    high = parseInt(high || 0)
+    low = parseInt(low || 0)
+    if (typeof searchCb !== 'function') throw new Error('SeachCb must be a function')
+    let [l, h] = await Promise.all([low, high].map(b => searchCb(b)))
+    if (l !== h) {
+      if (high === low + 1) {
+        return high
+      } else {
+        let mid = Math.floor(high / 2 + low / 2)
+        let res = await Promise.all([
+          binarySearchNumber(searchCb, high, mid),
+          binarySearchNumber(searchCb, mid, low)])
+        return filterArr(res)
+      }
+    }
+  } catch (err) {
+    return Promise.reject(err)
+  }
+}
