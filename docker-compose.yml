@@ -2,7 +2,7 @@ version: "3"
 services:
   explorer-api:
     build: .
-    image: tnyyxx/explorer-api01:latest
+    image: tinyyxx/explorer-api01:latest
     depends_on:
       - rsk-node
       - mongod
