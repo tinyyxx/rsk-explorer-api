@@ -1,6 +1,6 @@
 {
   "source": {
-    "node": "rsk-node01"
+    "node": "rsk-node"
   },
   "api": {
     "address": "0.0.0.0",
@@ -8,6 +8,6 @@
     "exposeDoc": true
   },
   "db": {
-    "server": "mongod01"
+    "server": "mongod"
   }
 }

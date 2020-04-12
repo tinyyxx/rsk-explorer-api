@@ -23,15 +23,15 @@ RUN \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
   rm -f /etc/rsk/node.conf && \
-  ln -s /etc/rsk/regtest.conf /etc/rsk/node.conf && \
-  rm -f /etc/rsk/regtest.conf
-COPY regtest.conf /etc/rsk/regtest.conf
+  ln -s /etc/rsk/testnet.conf /etc/rsk/node.conf && \
+  rm -f /etc/rsk/testnet.conf
+COPY testnet.conf /etc/rsk/testnet.conf
 
 # Supervisod CONF
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 4444
-EXPOSE 30305
+EXPOSE 50505
 
 # Define default command.
 CMD ["/usr/bin/supervisord"]
