@@ -23,9 +23,9 @@ RUN \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
   rm -f /etc/rsk/node.conf && \
-  ln -s /etc/rsk/testnet.conf /etc/rsk/node.conf && \
-  rm -f /etc/rsk/testnet.conf
-COPY testnet.conf /etc/rsk/testnet.conf
+  ln -s /etc/rsk/mainnet.conf /etc/rsk/node.conf && \
+  rm -f /etc/rsk/mainnet.conf
+COPY mainnet.conf /etc/rsk/mainnet.conf
 
 # Supervisod CONF
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
